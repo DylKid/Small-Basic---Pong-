@@ -3,22 +3,28 @@ height = 500
 width = 1000
 
 paddleHeight = 100 
-paddleWidth = 30
+paddleWidth = 27
 paddleBorderWidth = 3
 
 ballRadius = 26
 ballX = (width/2) - ballRadius
 ballY = (height/2) - ballRadius
 
-'Make sure the change in velocity is between 0.4 and 1, but a little random to keep life fresh 
+'Make sure the change in velocity's magnitude is between 0.5 and 1, but a little random to keep life fresh 
 ballDeltaX = (Math.GetRandomNumber(10)/10) 
 ballDeltaY = (Math.GetRandomNumber(10)/10)
-If(ballDeltaX < 0.4) Then 
-  ballDeltaX = 0.4 
+TextWindow.WriteLine("deltaX: " + ballDeltaX + " deltaY: " + ballDeltaY) 
+
+'If it's less than 0.5 make it go in the opposite direction this means the ball has a chance to go
+'in any direction at the start 
+If(ballDeltaX < 0.5) Then 
+  ballDeltaX = ballDeltaX - 1 
 EndIf
-If(ballDeltaY < 0.4) Then 
-ballDeltaY = 0.4 
+If(ballDeltaY < 0.5) Then 
+  ballDeltaY = ballDeltaY - 1
 EndIf 
+
+TextWindow.WriteLine("deltaX: " + ballDeltaX + " deltaY: " + ballDeltaY) 
 
 'Draw the paddles
 GraphicsWindow.PenWidth = paddleBorderWidth 
@@ -35,7 +41,7 @@ GraphicsWindow.PenColor = "#8B0000"
 GraphicsWindow.BrushColor = "#B22222" 
 paddleRight = Shapes.AddRectangle(paddleWidth, paddleHeight) 
 paddleRightY = (height/2) - (paddleHeight/2)
-paddleRightX = width - (paddleWidth + 10)
+paddleRightX = width - (paddleWidth)
 
 'The Ball 
 GraphicsWindow.PenColor = "Peru" 
@@ -44,7 +50,15 @@ ball = Shapes.AddEllipse(ballRadius, ballRadius)
 Shapes.Move(ball, ballX, ballY) 
 
 'Initialize the window 
-InitializeWindow()
+'Draw the border 
+GraphicsWindow.PenColor = "Black" 
+GraphicsWindow.PenWidth = 5
+GraphicsWindow.Height = height
+GraphicsWindow.Width = width 
+GraphicsWindow.DrawRectangle(0,0,GraphicsWindow.Width+10,GraphicsWindow.Height+10) 
+Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
+Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
+GraphicsWindow.CanResize = "False"
 
 'Main game loop 
 While(1 = 1)
@@ -64,45 +78,55 @@ While(1 = 1)
     ballDeltaY = -ballDeltaY
   EndIf 
   
-  'Test ball collision with paddles 
-  If(ballX >= (paddleRightX-paddleWidth) And ((ballY <= paddleRightY) And (ballY >= paddleRightY + paddleHeight)))  Then 
+  'Ball Collision with right paddle front 
+  If(ballX > (paddleRightX-paddleWidth) And ((ballY > paddleRightY) And (ballY < paddleRightY + paddleHeight)))  Then 
     ballDeltaX = -ballDeltaX
   EndIf 
   
-  Program.Delay(5) 
+  'Ball collision with right paddle top and bottom 
+  If(ballX > (paddleRightX-paddleWidth) And  (ballY = paddleRightY Or ballY = paddleRightY + paddleHeight)) Then 
+    ballDeltaY = -ballDeltaY 
+  EndIf 
   
+  
+
+  'Ball collision with left paddle front 
+  If(ballX < (paddleLeftX+paddleWidth)  And ((ballY > paddleLeftY) And (ballY < paddleLeftY + paddleHeight))) Then 
+    ballDeltaX = -ballDeltaX
+  EndIf 
+  
+  'Ball collision with left paddle top and bottom 
+  'If(ballX < (paddleLeftY+paddleWidth) And ((ballY = paddleLeftY) Or (ballY = paddleLeftY + paddleHeight))) Then 
+  '  ballDeltaY = -ballDeltaY
+  'EndIf 
+  'TextWindow.WriteLine("ballX: " + ballX + " paddleLeftPos: " + paddleLeftPos) 
+  
+  'Ball collision with left paddle top and bottom
+  
+  
+  Program.Delay(5) 
+  'TextWindow.WriteLine("ballX:" + ballX + " ballY:" + ballY + " paddleRightY:" + paddleRightY + " paddleRightHeight:" + paddleHeight)
   Shapes.Move(ball, ballX, ballY) 
   
 EndWhile
-
-'Put it in a function just to neaten up the start 
-Sub InitializeWindow
-  'Draw the border 
-  GraphicsWindow.PenColor = "Black" 
-  GraphicsWindow.PenWidth = 5
-  GraphicsWindow.Height = height
-  GraphicsWindow.Width = width 
-  GraphicsWindow.DrawRectangle(0,0,width,height) 
-  Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
-  Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
-EndSub
 
 'Handle the controls   
 Sub OnKeyDown 
   'Handle the 'left' player 
   If GraphicsWindow.LastKey = "A" Then 
-    paddleLeftY = paddleLeftY - 8
+    paddleLeftY = paddleLeftY - 14
   ElseIf GraphicsWindow.LastKey = "Z" Then 
-    paddleLeftY = paddleLeftY + 8 
+    paddleLeftY = paddleLeftY + 14 
   EndIf 
   Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
     
   'Handle the 'Right' player 
   If GraphicsWindow.LastKey = "Up" Then
-    paddleRightY = paddleRightY - 8 
+    paddleRightY = paddleRightY - 14 
   ElseIf GraphicsWindow.LastKey = "Down" Then
-    paddleRightY = paddleRightY + 8 
+    paddleRightY = paddleRightY + 14 
   EndIf
   Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 EndSub 
+
  
