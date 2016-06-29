@@ -1,0 +1,21 @@
+'Set up some variables to make my life nicer 
+height = 500 
+width = 1000
+
+'Draw the border 
+GraphicsWindow.PenWidth = 5
+GraphicsWindow.Height = height
+GraphicsWindow.Width = width 
+GraphicsWindow.DrawLine(0,0, width, 0) 
+GraphicsWindow.DrawLine(0,0, 0, height)
+GraphicsWindow.DrawLine(0, height, width, height)
+GraphicsWindow.DrawLine(width, height, width, 0) 
+
+
+
+
+GraphicsWindow.Show() 
+
+
+
+
