@@ -3,7 +3,7 @@ height = 500
 width = 1000
 
 paddleHeight = 100 
-paddleWidth = 18.5
+paddleWidth = 30
 paddleBorderWidth = 3
 
 ballRadius = 26
@@ -43,24 +43,30 @@ GraphicsWindow.BrushColor = "Chocolate"
 ball = Shapes.AddEllipse(ballRadius, ballRadius) 
 Shapes.Move(ball, ballX, ballY) 
 
-
-
 'Initialize the window 
 InitializeWindow()
 
 'Main game loop 
 While(1 = 1)
+  
+  GraphicsWindow.KeyDown = OnKeyDown 
+  
+  'Update the ball's position based on the X and Y velocity 
   ballX = ballX + ballDeltaX 
   ballY = ballY + ballDeltaY 
   
-  
+  'Test ball collision with the borders 
   If(ballX >= width - ballRadius Or ballX <= 0) Then 
-    TextWindow.WriteLine(ballX + " is > " + (GraphicsWindow.Width-ballRadius) + " or " + ballX + " is <= 0")
     ballDeltaX = -ballDeltaX
   EndIf 
+  
   If(ballY <= 0 Or ballY >= height - ballRadius) Then 
     ballDeltaY = -ballDeltaY
-    TextWindow.WriteLine(ballY + " is <= 0") 
+  EndIf 
+  
+  'Test ball collision with paddles 
+  If(ballX >= (paddleRightX-paddleWidth) And ((ballY <= paddleRightY) And (ballY >= paddleRightY + paddleHeight)))  Then 
+    ballDeltaX = -ballDeltaX
   EndIf 
   
   Program.Delay(5) 
@@ -81,8 +87,7 @@ Sub InitializeWindow
   Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 EndSub
 
-'Handle the controls 
-GraphicsWindow.KeyDown = OnKeyDown   
+'Handle the controls   
 Sub OnKeyDown 
   'Handle the 'left' player 
   If GraphicsWindow.LastKey = "A" Then 
@@ -100,9 +105,4 @@ Sub OnKeyDown
   EndIf
   Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 EndSub 
-  
-
-
-
-
-
+ 
