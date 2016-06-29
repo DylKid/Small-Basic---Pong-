@@ -84,9 +84,9 @@ While(1 = 1)
   EndIf 
   
   'Ball collision with right paddle top and bottom 
-  If(ballX > (paddleRightX-paddleWidth) And  (ballY = paddleRightY Or ballY = paddleRightY + paddleHeight)) Then 
-    ballDeltaY = -ballDeltaY 
-  EndIf 
+  'If(ballX > (paddleRightX-paddleWidth) And  (ballY = paddleRightY Or ballY = paddleRightY + paddleHeight)) Then 
+  '  ballDeltaY = -ballDeltaY 
+  'EndIf 
   
   
 
@@ -113,20 +113,19 @@ EndWhile
 'Handle the controls   
 Sub OnKeyDown 
   'Handle the 'left' player 
-  If GraphicsWindow.LastKey = "A" Then 
-    paddleLeftY = paddleLeftY - 14
-  ElseIf GraphicsWindow.LastKey = "Z" Then 
-    paddleLeftY = paddleLeftY + 14 
-  EndIf 
-  Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
+    If (GraphicsWindow.LastKey = "A") And (paddleLeftY > (14)) Then 
+      paddleLeftY = paddleLeftY - 14
+    ElseIf (GraphicsWindow.LastKey = "Z") and (paddleLeftY < (height-paddleHeight-4)) Then 
+      paddleLeftY = paddleLeftY + 14 
+    EndIf 
+    Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
+   
     
   'Handle the 'Right' player 
-  If GraphicsWindow.LastKey = "Up" Then
+  If (GraphicsWindow.LastKey = "Up") And (paddleRightY > 14) Then
     paddleRightY = paddleRightY - 14 
-  ElseIf GraphicsWindow.LastKey = "Down" Then
+  ElseIf (GraphicsWindow.LastKey = "Down") And (paddleRightY < (height-paddleHeight-4)) Then
     paddleRightY = paddleRightY + 14 
   EndIf
   Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 EndSub 
-
- 
