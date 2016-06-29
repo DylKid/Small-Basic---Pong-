@@ -1,20 +1,70 @@
-'Set up some variables to make my life nicer 
+'Initialzie variables
 height = 500 
 width = 1000
 
-'Draw the border 
-GraphicsWindow.PenWidth = 5
-GraphicsWindow.Height = height
-GraphicsWindow.Width = width 
-GraphicsWindow.DrawLine(0,0, width, 0) 
-GraphicsWindow.DrawLine(0,0, 0, height)
-GraphicsWindow.DrawLine(0, height, width, height)
-GraphicsWindow.DrawLine(width, height, width, 0) 
+paddleHeight = 100 
+paddleWidth = 18.5
+paddleBorderWidth = 3
 
+'Draw the paddles
+GraphicsWindow.PenWidth = paddleBorderWidth 
 
+'The Left Paddle (blue) 
+GraphicsWindow.PenColor = "#00008B" 
+GraphicsWindow.BrushColor = "#0000FF"
+paddleLeft = Shapes.AddRectangle(paddleWidth, paddleHeight) 
+paddleLeftY = (height/2) - (paddleHeight/2)
+paddleLeftX = 10
 
+'The Right Paddle (Red) 
+GraphicsWindow.PenColor = "#8B0000"
+GraphicsWindow.BrushColor = "#B22222" 
+paddleRight = Shapes.AddRectangle(paddleWidth, paddleHeight) 
+paddleRightY = (height/2) - (paddleHeight/2)
+paddleRightX = width - (paddleWidth + 10) 
 
-GraphicsWindow.Show() 
+'Initialize the window 
+InitializeWindow()
+
+'Main game loop 
+While(1) 
+
+EndWhile
+
+'Put it in a function just to neaten up the start 
+Sub InitializeWindow
+  'Draw the border 
+  GraphicsWindow.PenColor = "Black" 
+  GraphicsWindow.PenWidth = 5
+  GraphicsWindow.Height = height
+  GraphicsWindow.Width = width 
+  GraphicsWindow.DrawRectangle(0,0,width,height) 
+  Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
+  Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
+EndSub
+
+'Handle the controls 
+GraphicsWindow.KeyDown = OnKeyDown   
+Sub OnKeyDown 
+  'Handle the 'left' player 
+  If GraphicsWindow.LastKey = "A" Then 
+    paddleLeftY = paddleLeftY - 8
+  ElseIf GraphicsWindow.LastKey = "Z" Then 
+    paddleLeftY = paddleLeftY + 8 
+  EndIf 
+  Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
+    
+  'Handle the 'Right' player 
+  If GraphicsWindow.LastKey = "Up" Then
+    paddleRightY = paddleRightY - 8 
+  ElseIf GraphicsWindow.LastKey = "Down" Then
+    paddleRightY = paddleRightY + 8 
+  EndIf
+  Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
+     
+EndSub 
+  
+
 
 
 
