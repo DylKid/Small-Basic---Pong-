@@ -6,6 +6,20 @@ paddleHeight = 100
 paddleWidth = 18.5
 paddleBorderWidth = 3
 
+ballRadius = 26
+ballX = (width/2) - ballRadius
+ballY = (height/2) - ballRadius
+
+'Make sure the change in velocity is between 0.4 and 1, but a little random to keep life fresh 
+ballDeltaX = (Math.GetRandomNumber(10)/10) 
+ballDeltaY = (Math.GetRandomNumber(10)/10)
+If(ballDeltaX < 0.4) Then 
+  ballDeltaX = 0.4 
+EndIf
+If(ballDeltaY < 0.4) Then 
+ballDeltaY = 0.4 
+EndIf 
+
 'Draw the paddles
 GraphicsWindow.PenWidth = paddleBorderWidth 
 
@@ -21,14 +35,38 @@ GraphicsWindow.PenColor = "#8B0000"
 GraphicsWindow.BrushColor = "#B22222" 
 paddleRight = Shapes.AddRectangle(paddleWidth, paddleHeight) 
 paddleRightY = (height/2) - (paddleHeight/2)
-paddleRightX = width - (paddleWidth + 10) 
+paddleRightX = width - (paddleWidth + 10)
+
+'The Ball 
+GraphicsWindow.PenColor = "Peru" 
+GraphicsWindow.BrushColor = "Chocolate" 
+ball = Shapes.AddEllipse(ballRadius, ballRadius) 
+Shapes.Move(ball, ballX, ballY) 
+
+
 
 'Initialize the window 
 InitializeWindow()
 
 'Main game loop 
-While(1) 
-
+While(1 = 1)
+  ballX = ballX + ballDeltaX 
+  ballY = ballY + ballDeltaY 
+  
+  
+  If(ballX >= width - ballRadius Or ballX <= 0) Then 
+    TextWindow.WriteLine(ballX + " is > " + (GraphicsWindow.Width-ballRadius) + " or " + ballX + " is <= 0")
+    ballDeltaX = -ballDeltaX
+  EndIf 
+  If(ballY <= 0 Or ballY >= height - ballRadius) Then 
+    ballDeltaY = -ballDeltaY
+    TextWindow.WriteLine(ballY + " is <= 0") 
+  EndIf 
+  
+  Program.Delay(5) 
+  
+  Shapes.Move(ball, ballX, ballY) 
+  
 EndWhile
 
 'Put it in a function just to neaten up the start 
@@ -61,7 +99,6 @@ Sub OnKeyDown
     paddleRightY = paddleRightY + 8 
   EndIf
   Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
-     
 EndSub 
   
 
