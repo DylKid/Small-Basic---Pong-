@@ -58,6 +58,8 @@ Shapes.Move(paddleRight, paddleRightX, paddleRightY)
 GraphicsWindow.CanResize = "False"
 GraphicsWindow.Title = "Pong" 
 
+'Counter variables, used for making sure the ball can't "collide" forever
+'otherwise it glitches out and just inverts the axes infinitely 
 collide = 0
 counter = 0 
 collisionCounter = 0
@@ -141,23 +143,25 @@ EndWhile
 Sub OnKeyDown 
   'Handle the 'left' player 
     If (GraphicsWindow.LastKey = "A") And (paddleLeftY > (14)) Then 
-      paddleLeftY = paddleLeftY - 14
-    ElseIf (GraphicsWindow.LastKey = "Z") and (paddleLeftY < (height-paddleHeight-4)) Then 
-      paddleLeftY = paddleLeftY + 14 
+      paddleLeftY = paddleLeftY - 24
+    ElseIf (GraphicsWindow.LastKey = "Z") and (paddleLeftY < (height-paddleHeight-8)) Then 
+      paddleLeftY = paddleLeftY + 24 
     EndIf 
     Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
    
     
   'Handle the 'Right' player 
   If (GraphicsWindow.LastKey = "Up") And (paddleRightY > 14) Then
-    paddleRightY = paddleRightY - 14 
-  ElseIf (GraphicsWindow.LastKey = "Down") And (paddleRightY < (height-paddleHeight-4)) Then
-    paddleRightY = paddleRightY + 14 
+    paddleRightY = paddleRightY - 24
+  ElseIf (GraphicsWindow.LastKey = "Down") And (paddleRightY < (height-paddleHeight-8)) Then
+    paddleRightY = paddleRightY + 24
   EndIf
   Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 EndSub 
 
 Sub resetGame 
+    ballDeltaX = (Math.GetRandomNumber(10)/10) 
+    ballDeltaY = (Math.GetRandomNumber(10)/10)
     ballX = (width/2) - ballRadius
     ballY = (height/2) - ballRadius
     Shapes.Move(ball, ballX, ballY) 
@@ -167,6 +171,12 @@ Sub resetGame
     paddleRightX = width - (paddleWidth)
     Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
     Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
+    If(ballDeltaX < 0.5) Then 
+      ballDeltaX = ballDeltaX - 1 
+    EndIf
+    If(ballDeltaY < 0.5) Then 
+      ballDeltaY = ballDeltaY - 1
+    EndIf 
  EndSub 
   
   Sub speedUp
@@ -181,4 +191,3 @@ Sub resetGame
       ballDeltaY = ballDeltaY + 0.1 
     EndIf 
   EndSub 
-  
