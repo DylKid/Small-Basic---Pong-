@@ -180,6 +180,5 @@ Sub resetGame
     Else 
       ballDeltaY = ballDeltaY + 0.1 
     EndIf 
-    TextWindow.WriteLine("X: " + ballDeltaX + "Y: " + ballDeltaY) 
   EndSub 
   
