@@ -11,9 +11,9 @@ ballX = (width/2) - ballRadius
 ballY = (height/2) - ballRadius
 
 'Make sure the change in velocity's magnitude is between 0.5 and 1, but a little random to keep life fresh 
-ballDeltaX = (Math.GetRandomNumber(10)/10) 
-ballDeltaY = (Math.GetRandomNumber(10)/10)
-TextWindow.WriteLine("deltaX: " + ballDeltaX + " deltaY: " + ballDeltaY) 
+'ballDeltaX = (Math.GetRandomNumber(10)/10) 
+'ballDeltaY = (Math.GetRandomNumber(10)/10)
+'TextWindow.WriteLine("deltaX: " + ballDeltaX + " deltaY: " + ballDeltaY) 
 
 'If it's less than 0.5 make it go in the opposite direction this means the ball has a chance to go
 'in any direction at the start 
@@ -24,7 +24,7 @@ If(ballDeltaY < 0.5) Then
   ballDeltaY = ballDeltaY - 1
 EndIf 
 
-TextWindow.WriteLine("deltaX: " + ballDeltaX + " deltaY: " + ballDeltaY) 
+'TextWindow.WriteLine("deltaX: " + ballDeltaX + " deltaY: " + ballDeltaY) 
 
 'Draw the paddles
 GraphicsWindow.PenWidth = paddleBorderWidth 
@@ -60,8 +60,18 @@ Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
 Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 GraphicsWindow.CanResize = "False"
 
+collide = 0
+counter = 0 
+collisionCounter = 0
+
 'Main game loop 
 While(1 = 1)
+  
+  'Has there been a collision recently 
+  If(counter - collisionCounter >= 300) Then 
+    collide = 0 
+    collisionCounter = 0 
+  EndIf 
   
   GraphicsWindow.KeyDown = OnKeyDown 
   
@@ -70,8 +80,17 @@ While(1 = 1)
   ballY = ballY + ballDeltaY 
   
   'Test ball collision with the borders 
-  If(ballX >= width - ballRadius Or ballX <= 0) Then 
+  
+  'Rightmost border
+  If(ballX >= width - ballRadius) Then 
     ballDeltaX = -ballDeltaX
+    TextWindow.WriteLine("Red player loses!") 
+  EndIf 
+  
+  'Leftmost border
+  If(ballX <= 0) Then 
+    ballDeltaX = -ballDeltaX
+    TextWindow.WriteLine("Blue player loses!") 
   EndIf 
   
   If(ballY <= 0 Or ballY >= height - ballRadius) Then 
@@ -79,33 +98,37 @@ While(1 = 1)
   EndIf 
   
   'Ball Collision with right paddle front 
-  If(ballX > (paddleRightX-paddleWidth) And ((ballY > paddleRightY) And (ballY < paddleRightY + paddleHeight)))  Then 
+  If(ballX > (paddleRightX-paddleWidth) And ((ballY > paddleRightY) And (ballY < paddleRightY + paddleHeight)) And collide = 0)  Then 
     ballDeltaX = -ballDeltaX
+    collide = 1 
+    collisionCounter = counter 
   EndIf 
   
   'Ball collision with right paddle top and bottom 
-  'If(ballX > (paddleRightX-paddleWidth) And  (ballY = paddleRightY Or ballY = paddleRightY + paddleHeight)) Then 
-  '  ballDeltaY = -ballDeltaY 
-  'EndIf 
-  
-  
-
-  'Ball collision with left paddle front 
-  If(ballX < (paddleLeftX+paddleWidth)  And ((ballY > paddleLeftY) And (ballY < paddleLeftY + paddleHeight))) Then 
+  If(ballX > (paddleRightX-paddleWidth) And  (ballY = paddleRightY Or ballY = paddleRightY + paddleHeight) And collide = 0) Then 
+    ballDeltaY = -ballDeltaY 
     ballDeltaX = -ballDeltaX
+    collide = 1
+    collisionCounter = counter 
   EndIf 
   
-  'Ball collision with left paddle top and bottom 
-  'If(ballX < (paddleLeftY+paddleWidth) And ((ballY = paddleLeftY) Or (ballY = paddleLeftY + paddleHeight))) Then 
-  '  ballDeltaY = -ballDeltaY
-  'EndIf 
-  'TextWindow.WriteLine("ballX: " + ballX + " paddleLeftPos: " + paddleLeftPos) 
+  'Ball collision with left paddle front 
+  If(ballX < (paddleLeftX+paddleWidth)  And ((ballY > paddleLeftY) And (ballY < paddleLeftY + paddleHeight)) And collide = 0) Then 
+    ballDeltaX = -ballDeltaX
+    collide = 1
+    collisionCounter = counter
+  EndIf 
   
-  'Ball collision with left paddle top and bottom
-  
+  'Ball collision with left paddle top and bottom FIX THIS IF STATEMENT 
+  If((ballX < (paddleLeftX+paddleWidth)) And (ballY = paddleLeftY Or ballY = (paddleLeftY + paddleHeight)) And collide = 0) Then 
+    ballDeltaY = -ballDeltaY
+    ballDeltaX = -ballDeltaX 
+    collide = 1
+    collisionCounter = counter
+  EndIf 
   
   Program.Delay(5) 
-  'TextWindow.WriteLine("ballX:" + ballX + " ballY:" + ballY + " paddleRightY:" + paddleRightY + " paddleRightHeight:" + paddleHeight)
+  counter = counter + 1
   Shapes.Move(ball, ballX, ballY) 
   
 EndWhile
