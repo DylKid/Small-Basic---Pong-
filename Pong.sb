@@ -7,62 +7,43 @@ paddleWidth = 27
 paddleBorderWidth = 3
 
 ballRadius = 26
-ballX = (width/2) - ballRadius
-ballY = (height/2) - ballRadius
-
-'Make sure the change in velocity's magnitude is between 0.5 and 1, but a little random to keep life fresh 
-ballDeltaX = (Math.GetRandomNumber(10)/10) 
-ballDeltaY = (Math.GetRandomNumber(10)/10)
-
-'If it's less than 0.5 make it go in the opposite direction this means the ball has a chance to go
-'in any direction at the start 
-If(ballDeltaX < 0.5) Then 
-  ballDeltaX = ballDeltaX - 1 
-EndIf
-If(ballDeltaY < 0.5) Then 
-  ballDeltaY = ballDeltaY - 1
-EndIf 
 
 'Draw the paddles
 GraphicsWindow.PenWidth = paddleBorderWidth 
 
-'The Left Paddle (blue) 
+'Create The Left Paddle (blue) 
 GraphicsWindow.PenColor = "#00008B" 
 GraphicsWindow.BrushColor = "#0000FF"
 paddleLeft = Shapes.AddRectangle(paddleWidth, paddleHeight) 
-paddleLeftY = (height/2) - (paddleHeight/2)
-paddleLeftX = 10
 
-'The Right Paddle (Red) 
+'Create The Right Paddle (Red) 
 GraphicsWindow.PenColor = "#8B0000"
 GraphicsWindow.BrushColor = "#B22222" 
 paddleRight = Shapes.AddRectangle(paddleWidth, paddleHeight) 
-paddleRightY = (height/2) - (paddleHeight/2)
-paddleRightX = width - (paddleWidth)
 
-'The Ball 
+'Create The Ball 
 GraphicsWindow.PenColor = "Peru" 
 GraphicsWindow.BrushColor = "Chocolate" 
 ball = Shapes.AddEllipse(ballRadius, ballRadius) 
-Shapes.Move(ball, ballX, ballY) 
 
-'Initialize the window 
-'Draw the border 
+''Create the window and border 
 GraphicsWindow.PenColor = "Black" 
 GraphicsWindow.PenWidth = 5
 GraphicsWindow.Height = height
 GraphicsWindow.Width = width 
 GraphicsWindow.DrawRectangle(0,0,GraphicsWindow.Width+10,GraphicsWindow.Height+10) 
-Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
-Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 GraphicsWindow.CanResize = "False"
 GraphicsWindow.Title = "Pong" 
 
-'Counter variables, used for making sure the ball can't "collide" forever
-'otherwise it glitches out and just inverts the axes infinitely 
-collide = 0
+'Variables and counter to prevent too many collisions in a short space of time 
+'Prevents bug where ball infinitely collides 
+collide = 0 
+collisionCounter = 0 
 counter = 0 
-collisionCounter = 0
+
+'Initalize the game state 
+initGame() 
+
 
 'Main game loop 
 While(1 = 1)
@@ -85,14 +66,14 @@ While(1 = 1)
   If(ballX >= width - ballRadius) Then 
     ballDeltaX = -ballDeltaX
     GraphicsWindow.ShowMessage("Red player loses!", "Pong")
-    resetGame() 
+    initGame() 
   EndIf 
   
   'Leftmost border
   If(ballX <= 0) Then 
     ballDeltaX = -ballDeltaX
     GraphicsWindow.ShowMessage("Blue player loses!", "Pong") 
-    resetGame() 
+    initGame() 
   EndIf 
   
   'Top and bottom borders
@@ -159,26 +140,37 @@ Sub OnKeyDown
   Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
 EndSub 
 
-Sub resetGame 
+'A function with all the init stuff up the top coppied in. 
+Sub initGame 
+    'Pick a random delta for X and Y, where delta is velocity 
     ballDeltaX = (Math.GetRandomNumber(10)/10) 
     ballDeltaY = (Math.GetRandomNumber(10)/10)
-    ballX = (width/2) - ballRadius
-    ballY = (height/2) - ballRadius
-    Shapes.Move(ball, ballX, ballY) 
-    paddleLeftY = (height/2) - (paddleHeight/2)
-    paddleLeftX = 10
-    paddleRightY = (height/2) - (paddleHeight/2)
-    paddleRightX = width - (paddleWidth)
-    Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
-    Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
+    
+    'If the delta is less than 0.5 then find it's negative alternative, 
+    'This keeps the magnitude of the delta > 0.5 and gives it the opportunity 
+    'To go in any direction 
     If(ballDeltaX < 0.5) Then 
       ballDeltaX = ballDeltaX - 1 
     EndIf
     If(ballDeltaY < 0.5) Then 
       ballDeltaY = ballDeltaY - 1
     EndIf 
+    
+    'Initialize the ball 
+    ballX = (width/2) - ballRadius
+    ballY = (height/2) - ballRadius
+    Shapes.Move(ball, ballX, ballY) 
+    
+    'Initialize the paddles 
+    paddleLeftY = (height/2) - (paddleHeight/2)
+    paddleLeftX = 10
+    paddleRightY = (height/2) - (paddleHeight/2)
+    paddleRightX = width - (paddleWidth)
+    Shapes.Move(paddleLeft, paddleLeftX, paddleLeftY)
+    Shapes.Move(paddleRight, paddleRightX, paddleRightY) 
  EndSub 
-  
+ 
+  'Increase the ball speed 
   Sub speedUp
     If(ballDeltaX < 0) Then 
       ballDeltaX = ballDeltaX - 0.1 
